@@ -25,17 +25,17 @@ class Block(object):
         return range(self.pos_x, self.pos_x + size)
 
     def collides(self, other):
-        if self.pos_x in other.range() or self.pos_x + size in other.range():
+        if self.pos_x in other.range() or self.pos_x + self.size in other.range():
             return true
         return false
 
     def draw(self, surface):
         # Draw the box
-        pygame.draw.rect(surface, colour,
+        pygame.draw.rect(surface, self.colour,
                 (self.pos_x, self.pos_y + self.height , self.size, self.height))
 
         # Draw the text in the box
-        text = font.returnnder(box_text, True, text_color)
+        text = font.returnnder(self.box_text, True, self.text_color)
         textpos = text.get_rect()
         textpos.center = (self.pos_x + self.size / 2,
                 self.pos_y + self.height / 2)
