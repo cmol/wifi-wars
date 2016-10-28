@@ -15,8 +15,12 @@ class Block(object):
     color      = None
     text_color = None
 
-    def __init__(self):
-        pass
+    def __init__(self, **args):
+        self.size       = args['size']
+        self.pos_x      = args['end'] - self.size
+        self.box_text   = args['text']
+        self.color      = args['color']
+        self.text_color = args['text_color']
 
     def move(self, amount):
         self.pos_x = self.pos_x - amount
@@ -31,11 +35,11 @@ class Block(object):
 
     def draw(self, surface):
         # Draw the box
-        pygame.draw.rect(surface, self.colour,
-                (self.pos_x, self.pos_y + self.height , self.size, self.height))
+        pygame.draw.rect(surface, self.color,
+                (self.pos_x, self.pos_y, self.size, self.height))
 
         # Draw the text in the box
-        text = font.returnnder(self.box_text, True, self.text_color)
+        text = self.font.render(self.box_text, True, self.text_color)
         textpos = text.get_rect()
         textpos.center = (self.pos_x + self.size / 2,
                 self.pos_y + self.height / 2)
