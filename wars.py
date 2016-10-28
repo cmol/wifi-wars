@@ -3,6 +3,8 @@
 import pygame,sys
 from pygame.locals import *
 
+from wars.block import Block
+
 pygame.init()
 
 # We'll run (target) at 30FPS for now
