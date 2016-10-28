@@ -4,6 +4,7 @@ import pygame,sys
 from pygame.locals import *
 
 from wars.block import Block
+from wars.device import Device
 
 pygame.init()
 
@@ -29,6 +30,12 @@ stations = []
 
 # TODO: Some kind of initialiser that actually makes some descitions based in
 #   the users input are made. This includes creating STs and APs.
+
+def draw_window():
+    pass
+
+def draw_boxes():
+    pass
 
 # Main loop
 while True:
