@@ -9,7 +9,6 @@ pygame.init()
 from wars.block import Block
 from wars.device import Device
 
-
 # We'll run (target) at 30FPS for now
 FPS = 30
 fpsClock = pygame.time.Clock()
