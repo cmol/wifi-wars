@@ -19,6 +19,8 @@ class Device(object):
     def move_blocks(self, amount):
         for block in self.blocks:
             block.move(amount)
+            if block.right_edge() <= 0:
+                blocks.remove(block)
 
     def add_block(self, block):
         block.pos_y = self.pos_y * self.height

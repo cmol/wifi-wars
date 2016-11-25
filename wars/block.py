@@ -14,6 +14,7 @@ class Block(object):
     box_text   = None
     color      = None
     text_color = None
+    cleared    = False
 
     def __init__(self, **args):
         self.size       = args['size']
@@ -30,6 +31,10 @@ class Block(object):
 
     def right_edge(self):
         return self.pos_x + self.size
+
+    def clear(self):
+        self.cleared = True
+        self.color = (0,255,0)
 
     def draw(self, surface):
         # Draw the box

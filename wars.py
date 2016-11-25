@@ -71,6 +71,10 @@ def move_lines():
     for dev in devices:
         dev.move_blocks(speed)
 
+    for block in blocks:
+        if block.right_edge() <= 0:
+            blocks.remove(block)
+
 def make_block(block, start, text=None):
     if text == None:
         text = block
@@ -83,6 +87,9 @@ def reset():
     for dev in devices:
         dev.reset()
 
+def add_typing(block):
+    pass
+
 # Main loop
 if __name__ == "__main__":
 
@@ -94,16 +101,22 @@ if __name__ == "__main__":
         # No loops!
         flow_index = flow_index % len(FLOW)
 
-        if blocks and blocks[0].pos_x == 0:
+        if blocks and blocks[0].pos_x == 0 and not block.cleared:
             reset()
 
         # Do we need to add a block
         if (not blocks) or blocks[-1].right_edge() < SCREEN_SIZE[0]:
             start = blocks[-1].right_edge() if blocks else SCREEN_SIZE[0]
 
-            blocks.append(make_block(FLOW[flow_index][0], start))
-            devices[FLOW[flow_index][1]].add_block(blocks[-1])
+            # Create a block, add it to the right lists and make it ready
+            # for drawing.
+            block = make_block(FLOW[flow_index][0], start)
+            blocks.append(block)
+            devices[FLOW[flow_index][1]].add_block(block)
             flow_index = flow_index + 1
+
+            # Add the block to the typing game
+            add_typing(block)
 
         # BELOW THIS, THINGS ARE RELATED TO DRAWING
         DISPLAYSURF.fill(WHITE)
