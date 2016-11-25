@@ -2,6 +2,7 @@
 
 import pygame,sys
 from pygame.locals import *
+from random import randint
 
 pygame.init()
 
@@ -35,12 +36,12 @@ COLS  = {
         }
 
 SIZES = {
-        'RTS':   60,
-        'CTS':   60,
-        'DATA': 120,
-        'ACK':   60,
-        'DIFS':  60,
-        'SIFS':  30
+        'RTS':  120,
+        'CTS':  120,
+        'DATA': 240,
+        'ACK':  120,
+        'DIFS': 120,
+        'SIFS':  60
         }
 
 FLOW  = [
@@ -80,7 +81,17 @@ KEYS = {
       K_w: "w",
       K_x: "x",
       K_y: "y",
-      K_z: "z"
+      K_z: "z",
+      K_0: "0",
+      K_1: "1",
+      K_2: "2",
+      K_3: "3",
+      K_4: "4",
+      K_5: "5",
+      K_6: "6",
+      K_7: "7",
+      K_8: "8",
+      K_9: "9"
       }
 
 # Basically a state machine over the flow
@@ -94,6 +105,7 @@ blocks  = []
 
 # Typing housekeeping
 typing  = []
+delete_with_next = False
 
 # Scoring system
 score           = 0
@@ -102,7 +114,7 @@ POINT_FOR_SEQ   = 30
 PENALTY         = 15
 UP_SPEED_AT     = 250
 
-def draw_window():
+def draw_scores():
     global speed, score
     text = FONT.render(str(int(speed)), True, WHITE)
     textpos = text.get_rect()
@@ -147,15 +159,20 @@ def add_typing(block):
     typing.append(list(block.box_text))
 
 def key_input(char):
-    global score, blocks, typing
-    if char.upper() == typing[0][0]:
+    global score, blocks, typing, delete_with_next
+    if char.upper() == typing[0][0].upper():
         score = score + POINT_FOR_BLOCK
         del typing[0][0]
         if not typing[0]:
             del typing[0]
             blocks[0].clear()
-            blocks.remove(blocks[0])
             score = score + POINT_FOR_SEQ
+
+            # If the block is still outside the screen, do not delete it yet.
+            if blocks[0].right_edge() > SCREEN_SIZE[0]:
+                delete_with_next = True
+            else:
+                blocks.remove(blocks[0])
     else:
         score = score - PENALTY
         reset()
@@ -191,9 +208,18 @@ if __name__ == "__main__":
         if (not blocks) or blocks[-1].right_edge() < SCREEN_SIZE[0]:
             start = blocks[-1].right_edge() if blocks else SCREEN_SIZE[0]
 
+            # Check if we need to delete the first element
+            if delete_with_next and blocks:
+                del blocks[0]
+                delete_with_next = False
+
             # Create a block, add it to the right lists and make it ready
             # for drawing.
-            block = make_block(FLOW[flow_index][0], start)
+            text = None
+            if FLOW[flow_index][0] == 'DATA':
+                text = hex(randint(0,2**16))[2:].zfill(4)
+
+            block = make_block(FLOW[flow_index][0], start, text=text)
             blocks.append(block)
             devices[FLOW[flow_index][1]].add_block(block)
             flow_index = flow_index + 1
@@ -205,8 +231,8 @@ if __name__ == "__main__":
         DISPLAYSURF.fill(BLACK)
         DISPLAYSURF.blit(BG, BGREC)
 
-        # Draw main window features along with STs and APs
-        draw_window()
+        # Draw scores
+        draw_scores()
 
         # Draw tranmission boxes
         draw_lines()

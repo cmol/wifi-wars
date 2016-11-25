@@ -4,7 +4,7 @@ from wars.block import Block
 
 class Device(object):
     # Static params
-    height = 30
+    height = 60
 
     # Object params
     blocks = []

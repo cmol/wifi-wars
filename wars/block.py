@@ -4,8 +4,8 @@ from pygame.locals import *
 class Block(object):
 
     # Static params
-    height = 30
-    font   = pygame.font.Font(None, 18)
+    height = 60
+    font   = pygame.font.Font(None, 42)
 
     # Object params
     size       = None
