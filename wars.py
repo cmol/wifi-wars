@@ -20,12 +20,13 @@ DISPLAYSURF = pygame.display.set_mode(SCREEN_SIZE, 0, 32)
 pygame.display.set_caption("WiFi Wars")
 
 # Define constants for later use
-FONT  = pygame.font.Font(None, 84)
-BG    = pygame.image.load('img/wars.png')
-BGREC = BG.get_rect()
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-COLS  = {
+FONT     = pygame.font.Font(None, 84)
+BG       = pygame.image.load('img/wars.png')
+BG_START = pygame.image.load('img/wars_start.png')
+BGREC    = BG.get_rect()
+WHITE    = (255, 255, 255)
+BLACK    = (0, 0, 0)
+COLS     = {
         'RTS':  (67,124,144),
         'CTS':  (37,89,87),
         'DATA': (238,235,211),
@@ -116,7 +117,8 @@ UP_SPEED_AT     = 250
 def draw_scores():
     global speed, score
     # Draw the speed and score feature on the screen
-    for show in [(speed, 310), (score, 810)]:
+    total = score * speed
+    for show in [(speed, 310), (total, 810)]:
         text = FONT.render(str(int(show[0])), True, WHITE)
         textpos = text.get_rect()
         textpos.right   = show[1]
@@ -169,12 +171,43 @@ def key_input(char):
         score = score - PENALTY
         reset()
 
+def quit():
+    print("Final score: {0}".format(int(speed * score)))
+    pygame.quit()
+    sys.exit()
+
 # Main loop
 if __name__ == "__main__":
 
     # Define devices
     devices.append(Device("AP",0))
     devices.append(Device("ST",1))
+
+    # Start card
+    wait = True
+    while wait:
+        DISPLAYSURF.fill(BLACK)
+        DISPLAYSURF.blit(BG_START, BGREC)
+        text = FONT.render("Type to survive!", True, WHITE)
+        textpos = text.get_rect()
+        textpos.center = (SCREEN_SIZE[0] / 2, 70)
+        DISPLAYSURF.blit(text,textpos)
+        text = FONT.render("PRESS any key to continue", True, WHITE)
+        textpos = text.get_rect()
+        textpos.center = (SCREEN_SIZE[0] / 2, 527)
+        DISPLAYSURF.blit(text,textpos)
+
+        pygame.display.update()
+        fpsClock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                quit()
+            elif event.type == KEYDOWN:
+                if event.key == K_q or event.key == K_ESCAPE:
+                    quit()
+                else:
+                    wait = False
+
 
     while True:
         # No loops!
@@ -188,12 +221,10 @@ if __name__ == "__main__":
         # Handle inputs
         for event in pygame.event.get():
             if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
+                quit()
             elif event.type == KEYDOWN:
                 if event.key == K_q or event.key == K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                    quit()
                 if event.key in KEYS.keys():
                     key_input(KEYS[event.key])
 
