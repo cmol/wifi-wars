@@ -115,19 +115,13 @@ UP_SPEED_AT     = 250
 
 def draw_scores():
     global speed, score
-    # Draw the speed feature on the screen
-    text = FONT.render(str(int(speed)), True, WHITE)
-    textpos = text.get_rect()
-    textpos.right   = 310
-    textpos.centery = 527
-    DISPLAYSURF.blit(text,textpos)
-
-    # Draw the score feature on the screen
-    text = FONT.render(str(int(score)), True, WHITE)
-    textpos = text.get_rect()
-    textpos.right   = 810
-    textpos.centery = 527
-    DISPLAYSURF.blit(text,textpos)
+    # Draw the speed and score feature on the screen
+    for show in [(speed, 310), (score, 810)]:
+        text = FONT.render(str(int(show[0])), True, WHITE)
+        textpos = text.get_rect()
+        textpos.right   = show[1]
+        textpos.centery = 527
+        DISPLAYSURF.blit(text,textpos)
 
 def draw_lines():
     global devices
