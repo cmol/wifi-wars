@@ -115,11 +115,14 @@ UP_SPEED_AT     = 250
 
 def draw_scores():
     global speed, score
+    # Draw the speed feature on the screen
     text = FONT.render(str(int(speed)), True, WHITE)
     textpos = text.get_rect()
     textpos.right   = 310
     textpos.centery = 527
     DISPLAYSURF.blit(text,textpos)
+
+    # Draw the score feature on the screen
     text = FONT.render(str(int(score)), True, WHITE)
     textpos = text.get_rect()
     textpos.right   = 810
@@ -135,10 +138,6 @@ def move_lines():
     global devices, blocks
     for dev in devices:
         dev.move_blocks(speed)
-
-    for block in blocks:
-        if block.right_edge() < -5:
-            blocks.remove(block)
 
 def make_block(block, start, text=None):
     if text == None:
@@ -192,12 +191,13 @@ if __name__ == "__main__":
         if blocks and blocks[0].pos_x <= 0 and not block.cleared:
             reset()
 
+        # Handle inputs
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
             elif event.type == KEYDOWN:
-                if event.key == K_q:
+                if event.key == K_q or event.key == K_ESCAPE:
                     pygame.quit()
                     sys.exit()
                 if event.key in KEYS.keys():
@@ -216,7 +216,7 @@ if __name__ == "__main__":
             # for drawing.
             text = None
             if FLOW[flow_index][0] == 'DATA':
-                text = hex(randint(0,2**16))[2:].zfill(4)
+                text = "0x" + hex(randint(0,2**16))[2:].zfill(4)
 
             block = make_block(FLOW[flow_index][0], start, text=text)
             blocks.append(block)
