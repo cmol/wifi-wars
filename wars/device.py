@@ -24,6 +24,9 @@ class Device(object):
         block.pos_y = self.pos_y * self.height
         self.blocks.append(block)
 
+    def reset(self):
+        del self.blocks[:]
+
     def draw(self, surface):
         # Do all the drawing of yourself ans such
         # TODO: Implement this..

@@ -17,7 +17,7 @@ class Block(object):
 
     def __init__(self, **args):
         self.size       = args['size']
-        self.pos_x      = args['end'] - self.size
+        self.pos_x      = args['start']
         self.box_text   = args['text']
         self.color      = args['color']
         self.text_color = args['text_color']
@@ -28,10 +28,8 @@ class Block(object):
     def range(self):
         return range(self.pos_x, self.pos_x + size)
 
-    def collides(self, other):
-        if self.pos_x in other.range() or self.pos_x + self.size in other.range():
-            return true
-        return false
+    def right_edge(self):
+        return self.pos_x + self.size
 
     def draw(self, surface):
         # Draw the box

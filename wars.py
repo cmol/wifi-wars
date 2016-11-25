@@ -12,9 +12,11 @@ from wars.device import Device
 # We'll run (target) at 30FPS for now
 FPS = 30
 fpsClock = pygame.time.Clock()
+SCREEN_SIZE = (400, 300)
+speed = 2
 
 # Initialise general stuff
-DISPLAYSURF = pygame.display.set_mode((400, 300), 0, 32)
+DISPLAYSURF = pygame.display.set_mode(SCREEN_SIZE, 0, 32)
 pygame.display.set_caption("WiFi Wars")
 
 # Define constants for later use
@@ -29,54 +31,81 @@ COLS  = {
         'SIFS': (255,140,0)
         }
 
+SIZES = {
+        'RTS':   60,
+        'CTS':   60,
+        'DATA': 120,
+        'ACK':   60,
+        'DIFS':  60,
+        'SIFS':  30
+        }
 
-# List of AP's
-aps = []
+FLOW  = [
+        ('DIFS', 0),
+        ('RTS' , 0),
+        ('SIFS', 1),
+        ('CTS' , 1),
+        ('SIFS', 0),
+        ('DATA', 0),
+        ('SIFS', 1),
+        ('ACK' , 1)
+        ]
 
-# List of stations
-stations = []
+# Basically a state machine over the flow
+flow_index = 0
 
-# TODO: Some kind of initialiser that actually makes some descitions based in
-#   the users input are made. This includes creating STs and APs.
+# Devices
+devices = []
+
+# Blocks
+blocks  = []
 
 def draw_window():
     pass
 
 def draw_lines():
-    for ap in aps:
-        ap.draw(DISPLAYSURF)
-    for st in stations:
-        st.draw(DISPLAYSURF)
+    for dev in devices:
+        dev.draw(DISPLAYSURF)
 
 def move_lines():
-    for ap in aps:
-        ap.move_blocks(1)
-    for st in stations:
-        st.move_blocks(1)
+    for dev in devices:
+        dev.move_blocks(speed)
 
-def make_block(block):
-    if block == 'RTS':
-        return Block(size=60,end=400,text="RTS",color=COLS['RTS'],text_color=BLACK)
-    elif block == 'CTS':
-        return Block(size=60,end=400,text="CTS",color=COLS['CTS'],text_color=BLACK)
-    elif block == 'DATA':
-        return Block(size=120,end=400,text="DATA",color=COLS['DATA'],text_color=BLACK)
-    elif block == 'ACK':
-        return Block(size=30,end=400,text="ACK",color=COLS['ACK'],text_color=BLACK)
+def make_block(block, start, text=None):
+    if text == None:
+        text = block
+
+    return Block(size=SIZES[block],start=start,text=text,color=COLS[block],text_color=BLACK)
+
+def reset():
+    flow_index = 0
+    del blocks[:]
+    for dev in devices:
+        dev.reset()
 
 # Main loop
 if __name__ == "__main__":
 
-    # Default test code
-    ap = Device("AP",0)
-    ap.add_block(make_block('DATA'))
-    aps = [ap]
-
-    st = Device("ST",1)
-    st.add_block(make_block('ACK'))
-    stations = [st]
+    # Define devices
+    devices.append(Device("AP",0))
+    devices.append(Device("ST",1))
 
     while True:
+        # No loops!
+        flow_index = flow_index % len(FLOW)
+
+        if blocks and blocks[0].pos_x == 0:
+            reset()
+
+        # Do we need to add a block
+        if (not blocks) or blocks[-1].right_edge() < SCREEN_SIZE[0]:
+            start = blocks[-1].right_edge() if blocks else SCREEN_SIZE[0]
+
+            blocks.append(make_block(FLOW[flow_index][0], start))
+            devices[FLOW[flow_index][1]].add_block(blocks[-1])
+            flow_index = flow_index + 1
+
+        # BELOW THIS, THINGS ARE RELATED TO DRAWING
         DISPLAYSURF.fill(WHITE)
 
         # Draw main window features along with STs and APs
