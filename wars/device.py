@@ -21,6 +21,7 @@ class Device(object):
             block.move(amount)
             if block.right_edge() <= 0:
                 self.blocks.remove(block)
+                del block
 
     def add_block(self, block):
         block.pos_y = self.pos_y * self.height
@@ -30,8 +31,8 @@ class Device(object):
         del self.blocks[:]
 
     def draw(self, surface):
-        # Do all the drawing of yourself ans such
-        # TODO: Implement this..
+        # Do all the drawing of yourself and such.
+        # As there is currently only one ST, this is omitted
 
         # Draw the blocks into yourself
         for block in self.blocks:
